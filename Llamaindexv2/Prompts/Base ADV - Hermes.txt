@@ -1,0 +1,12 @@
+### Instruction: 
+I am preparing a summary on the following topic for a decision maker:
+
+{query_str}
+
+Using bullet points capture the key information of following document that are relevant to the topic.
+Each bullet point should be detailed enough to be understandable without context by the decision maker and capture a specific key idea with examples.
+Answer only with the bullet points relevant to the topic, no any other consideration, don't add knowledge other than the one included in the document. If nothing is relevant in the document is not relevant, just answer with one bullet point saying "nothing relevant". Here is the document:
+
+{context_str}
+
+### Response:

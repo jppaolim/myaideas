@@ -43,20 +43,20 @@ def main(thequery: str):
 
     # ***************  logging and Callback 
 
-    logger = logging.getLogger()
-    logger.setLevel(LOGLEVEL)
+    #logger = logging.getLogger()
+    #logger.setLevel(LOGLEVEL)
 
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    #formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     #stdout_handler = logging.StreamHandler(sys.stdout)
     #stdout_handler.setLevel(logging.INFO)
     #stdout_handler.setFormatter(formatter)
 
-    file_handler = logging.FileHandler('ouput.log')
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
+    #file_handler = logging.FileHandler('ouput.log')
+    #file_handler.setLevel(logging.DEBUG)
+    #file_handler.setFormatter(formatter)
 
-    logger.addHandler(file_handler)
+    #logger.addHandler(file_handler)
     #logger.addHandler(stdout_handler)
 
     llama_debug = LlamaDebugHandler(print_trace_on_end=True)
@@ -68,8 +68,9 @@ def main(thequery: str):
     import openai
     openai.api_key=os.getenv('OPENAI_API_KEY')
 
+    #MODEL="gpt-4"
     if not FAKELLM:
-        llm=ChatOpenAI(temperature=0, model_name=MODEL, streaming=False) 
+        llm=ChatOpenAI(temperature=0.6, model_name=MODEL, streaming=False) 
       
     else :
         responses=[
@@ -153,37 +154,43 @@ def main(thequery: str):
     CHAT_REFINE_PROMPT_TMPL_MSGS = [
 
         HumanMessagePromptTemplate.from_template(
-        "Here is a topic I am studying: \n"
-        "---------------------\n"
+        "I am preparing a summary on the following topic for a decision maker:\n"
+        "\n"
         "{query_str}"
-        "\n---------------------\n"
-        "I have prepared a draft list of bullet points information related to the topic:\n"
+        "\n"
+        "Here is my current summary:\n"
+        "\n"
         "{existing_answer}\n"
-        "I have receveived following new document. Using bullet points summarize its key points that are relevant to the topic and update the draft list accordingly.\n"
-        "Bullet points should be crisp and specific but each bullet point should be understandable without context. Try to keep key examples. Here is the new document:\n"
-        "---------------------\n"
+        "\n"
+        "I have receveived following new document. Add new bullet points to the summary or update some of them to take into account this document."
+        "Eeach bullet point should be relevant to the topic, detailed enough to be understandable without context by the decision maker and capture a specific key idea with examples. Here is the new document:\n"
+        "\n"
         "{context_msg}"
-        "\n---------------------\n"
+        "\n"
         ),
         ]
        
-    test="Bullet points should be crisp, short, specific but each bullet point should be understandable without context. Here is the new document:"
+    test=(  "Bullet points should be crisp, short, specific but each bullet point should be understandable without context. Here is the new document:"
       
+    )
+
+
     CHAT_REFINE_PROMPT_LC = ChatPromptTemplate.from_messages(CHAT_REFINE_PROMPT_TMPL_MSGS)
     CHAT_REFINE_PROMPT = RefinePrompt.from_langchain_prompt(CHAT_REFINE_PROMPT_LC)
 
     # Text QA templates
     DEFAULT_TEXT_QA_PROMPT_TMPL_MSGS =  [
         HumanMessagePromptTemplate.from_template(
-        "Here is a topic I am studying: \n"
-        "---------------------\n"
+        "I am preparing a summary on the following topic for a decision maker:\n"
+        "\n"
         "{query_str}"
-        "\n---------------------\n"
-        "Using bullet points summarize the key points of following text that are relevant to the topic. Bullet points should be crisp and specific but each bullet point should be understandable without context. Try to keep key examples. \n"
-        "Answer with the only bullet points relevant to the topic, no any other consideration.\n"
-        "---------------------\n"
+        "\n"
+        "Using bullet points capture the key information of following document that are relevant to the topic."
+        "Each bullet point should be detailed enough to be understandable without context by the decision maker and capture a specific key idea with examples."
+        "Answer only with the bullet points relevant to the topic, no any other consideration. Here is the document:\n"
+        "\n"
         "{context_str}"
-        "\n---------------------\n"
+        "\n"
         ),
         ]
     
@@ -198,13 +205,13 @@ def main(thequery: str):
 
     query_engine = index_vec.as_query_engine (
         verbose=True,  
-        similarity_top_k=5,
+        similarity_top_k=18,
         text_qa_template=TEXT_QA_TEMPLATE,
         refine_template=CHAT_REFINE_PROMPT,
         response_mode='tree_summarize',
         response_kwargs={'num_children': 2},
         service_context=service_context,
-        node_postprocessors=[node_postprocessor],
+        #node_postprocessors=[node_postprocessor],
         #streaming=True
     
     )

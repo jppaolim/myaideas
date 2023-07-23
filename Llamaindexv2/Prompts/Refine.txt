@@ -1,0 +1,15 @@
+### Instruction: 
+I am preparing a summary on the following topic for a decision maker:
+
+{query_str}
+
+Here is my current summary:
+
+{existing_answer}
+
+I have receveived following new document. Add new bullet points to the summary or update some of them to take into account this document.
+Each bullet point should be relevant to the topic, detailed enough to be understandable without context by the decision maker and capture a specific key idea with examples. Here is the new document:
+        
+{context_msg} 
+
+### Response:

@@ -1,24 +1,15 @@
 # Documents  and database
 Ressources/
 
+*.sqlite
 
-Langchain/.env
-Langchain/.chroma/
-Langchain/db/
-Langchain/db/*
-Langchain/db*
-Langchain/*.log
 
-Llamaindex/.env
-Llamaindex/db*/
-Llamaindex/*.log
-
-openAI/.env
-openAI/.chroma/
-openAI/db/
-openAI/db/*
-openAI/db*
-openAI/*.log
+*/.env
+*/.chroma/
+*/db*/
+*/db/*
+*/db*
+*/*.log
 
 
 TMP/
