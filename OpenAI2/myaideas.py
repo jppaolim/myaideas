@@ -180,7 +180,7 @@ def main(thequery: str):
     
 
     if RUN_BASEQUERY:
-        sim_cut  = 0.80
+        sim_cut  = 0.85
         mmr = 0.95
 
         query_engine_A = build_queryengine(    
@@ -198,7 +198,7 @@ def main(thequery: str):
         #log_interaction(thequery, response_A.get_formatted_sources() )
     
     if RUN_EXPANDED1:
-        sim_cut  = 0.40
+        sim_cut  = 0.50
         mmr = 0.90
         
         query_engine_B = build_queryengine(    
@@ -218,7 +218,7 @@ def main(thequery: str):
 
 
     if RUN_EXPANDED2:
-        sim_cut  = 0.40
+        sim_cut  = 0.50
         mmr = 0.90
     
         query_engine_C = build_queryengine(    
@@ -238,7 +238,7 @@ def main(thequery: str):
 
 
     if RUN_HYDE:
-        sim_cut  = 0.40
+        sim_cut  = 0.50
         mmr = 0.90
 
         filled_template = (
