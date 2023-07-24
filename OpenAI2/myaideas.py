@@ -180,7 +180,7 @@ def main(thequery: str):
     
 
     if RUN_BASEQUERY:
-        sim_cut  = 0.70
+        sim_cut  = 0.80
         mmr = 0.95
 
         query_engine_A = build_queryengine(    
@@ -198,8 +198,8 @@ def main(thequery: str):
         #log_interaction(thequery, response_A.get_formatted_sources() )
     
     if RUN_EXPANDED1:
-        sim_cut  = 0.10
-        mmr = 0.75
+        sim_cut  = 0.40
+        mmr = 0.90
         
         query_engine_B = build_queryengine(    
             sim_cut  = sim_cut,
@@ -232,7 +232,7 @@ def main(thequery: str):
 
         response_C  = query_engine_C.query(thequery)
      
-        log_interaction(f"SET C : Blog - avg diversity : {sim_cut}, mmr =  {mmr}")  
+        log_interaction(f"SET C : Blog - more diversity : {sim_cut}, mmr =  {mmr}")  
         log_interaction(thequery, response_C )
         #log_interaction(thequery, response_C.get_formatted_sources() )
 
@@ -277,7 +277,7 @@ def main(thequery: str):
         
         response_D  = query_engine_D.query(requery)
         
-        log_interaction(f"SET D - HYDE : {sim_cut}, mmr =  {mmr}")  
+        log_interaction(f"SET D - HYDE TENTATIVE INSPIRATION : {sim_cut}, mmr =  {mmr}")  
         log_interaction(thequery, response_D )
         #log_interaction(thequery, response_D.get_formatted_sources() )
        
