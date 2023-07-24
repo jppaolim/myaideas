@@ -3,6 +3,7 @@ Ressources/
 
 *.sqlite
 
+*interactions.*
 
 */.env
 */.chroma/

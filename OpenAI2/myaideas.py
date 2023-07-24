@@ -4,6 +4,13 @@ import sys
 import shutil
 import argparse
 
+# ****************  Load local var and utils
+from config import *
+from utils import *
+from prompts import *
+
+
+# ****************  LLAMA imports 
 
 from llama_index import (
     VectorStoreIndex,
@@ -21,149 +28,107 @@ from llama_index import (
 from langchain.embeddings import HuggingFaceInstructEmbeddings, HuggingFaceEmbeddings
 
 from llama_index.node_parser.simple import SimpleNodeParser
+from llama_index.langchain_helpers.text_splitter import SentenceSplitter
+from llama_index.node_parser.extractors import (
+    MetadataExtractor,
+    SummaryExtractor,
+)
+from llama_index.indices.postprocessor import PrevNextNodePostprocessor, SimilarityPostprocessor
 
 from llama_index.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 
 from llama_index.retrievers import VectorIndexRetriever
 from llama_index.query_engine import RetrieverQueryEngine
-
-from llama_index.langchain_helpers.text_splitter import SentenceSplitter
+from llama_index.indices.query.query_transform import HyDEQueryTransform
+from llama_index.query_engine.transform_query_engine import TransformQueryEngine
 
 from llama_index.logger import LlamaLogger
 from llama_index.callbacks import CallbackManager, LlamaDebugHandler, CBEventType
 
-from llama_index.node_parser.extractors import (
-    MetadataExtractor,
-    SummaryExtractor,
-)
-
-from llama_index.indices.postprocessor import PrevNextNodePostprocessor, SimilarityPostprocessor
-
-from llama_index.indices.query.query_transform import HyDEQueryTransform
-from llama_index.query_engine.transform_query_engine import TransformQueryEngine
 
 
-# ****************  Load local var and utils
-from config import *
+# ***************  logging and Callback 
 
-from datetime import datetime
+logger = logging.getLogger()
+logger.setLevel(LOGLEVEL)
 
-def log_interaction(input_str, response_str, filename):
-    # Open the file in append mode ('a')
-    with open(filename, 'a') as f:
-        # Write the current date and time
-        f.write(f"{datetime.now()}:\n")
-        # Write the input
-        f.write(f"Input: {input_str}\n")
-        # Write the response
-        f.write(f"Response: {response_str}\n")
-        # Write a new line for separating this interaction from the next one
-        f.write("-------------------------------\n")
-        f.write("\n")
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-#from trulens_eval import TruLlama
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
+stdout_handler.setFormatter(formatter)
 
-def read_str_prompt(filepath: str):
+logger.addHandler(stdout_handler)
 
-    with open(filepath, 'r') as file:
-            template = file.read()
-
-    return(template) 
+llama_debug = LlamaDebugHandler(print_trace_on_end=True)
+callback_manager = CallbackManager([llama_debug])
+llama_logger = LlamaLogger()
 
 
-def embeddings_function():
+# ***************  Query Engine Builder
+
+def build_queryengine(index_vec: VectorStoreIndex, text_qa_template: str, service_context: ServiceContext, sim_cut: float=0.8, mmr: float=0.9, topk: int=6)  -> RetrieverQueryEngine:
+    
+    node_postprocessors = [
+       SimilarityPostprocessor(similarity_cutoff=sim_cut)
+        ]
+
+    query_engine = index_vec.as_query_engine (
+        response_mode="accumulate",
+        vector_store_query_mode="mmr", 
+        vector_store_kwargs={"mmr_threshold": mmr},
+        similarity_top_k=topk,
+        use_async=False,
+        verbose=True,
+        node_postprocessors=node_postprocessors,
+        text_qa_template=text_qa_template,
+        #refine_template=CHAT_REFINE_PROMPT,
+        service_context=service_context,
+       )
+    return query_engine
+
+# *************** MAIN LOOP 
+
+
+def main(thequery: str):
+
+    # ***************  Embedding
     embed_instruction = "Represent the document for retrieval; Input: "
     query_instruction = "Represent the topic or query for retrieving relevant documents; Input: "
     model_kwargs = {'device': 'mps'}
     encode_kwargs = {'normalize_embeddings': False}
-    Instructembedding = HuggingFaceInstructEmbeddings(
-        model_name=INSTRUCT_MODEL, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs, embed_instruction=embed_instruction, query_instruction=query_instruction)
-    return Instructembedding
-
-#************* - A casser dans class MarkdownReader
-import re
-def correct_markdown(self, content: str) -> str:
-        """Correct headers inside markdown links."""
-        pattern = r"\[\s*\n*(#{1,6}.*?)\n*\]\((.*?)\)"
-        # Split the header and the link, then reformulate
-        def replacer(match):
-            header = match.group(1)
-            link = match.group(2)
-            return header + "\n[Link](" + link + ")"
-        content = re.sub(pattern, replacer, content)
-        return content
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, cast
-def parse_tups(
-    self, filepath: Path, errors: str = "ignore"
-) -> List[Tuple[Optional[str], str]]:
-    """Parse file into tuples."""
-    with open(filepath, "r", encoding="utf-8") as f:
-        content = f.read()
-    if self._remove_hyperlinks:
-        content = self.remove_hyperlinks(content)
-    if self._remove_images:
-        content = self.remove_images(content)
-    content = self. correct_markdown(content)
-    markdown_tups = self.markdown_to_tups(content)
-    return markdown_tups
-
-# *************** MAIN LOOP 
-
-def main(thequery: str):
-
-    # ***************  logging and Callback 
-
-    logger = logging.getLogger()
-    logger.setLevel(LOGLEVEL)
-
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    stdout_handler = logging.StreamHandler(sys.stdout)
-    stdout_handler.setLevel(logging.INFO)
-    stdout_handler.setFormatter(formatter)
-
-    file_handler = logging.FileHandler('ouput.log')
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
-
-    logger.addHandler(file_handler)
-    logger.addHandler(stdout_handler)
-
-    llama_debug = LlamaDebugHandler(print_trace_on_end=True)
-    callback_manager = CallbackManager([llama_debug])
-    llama_logger = LlamaLogger()
-
-    # ***************  Embedding
-    #Instructor : 
-    embed_model = LangchainEmbedding(embeddings_function())
+     
+    embed_model = LangchainEmbedding(
+        HuggingFaceInstructEmbeddings(
+        model_name=INSTRUCT_MODEL, 
+        model_kwargs=model_kwargs, 
+        encode_kwargs=encode_kwargs, 
+        embed_instruction=embed_instruction, query_instruction=query_instruction
+        )
+    )
     
     # ***************  LLM     
 
     MAXOUTPUT = MAXTOKEN / 2 
-
     llm=ChatOpenAI(temperature=0.6, model_name=MODEL, streaming=False, max_tokens=MAXOUTPUT) 
-    #llm.client.verbose= False
     llm_predictor = LLMPredictor(llm=llm)
 
-   
+  
+   # ***************  Text splitter & node parser  
+    text_splitter= SentenceSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=OVERLAP)
     metadata_extractor = MetadataExtractor(
         extractors=[
             SummaryExtractor(summaries=["prev", "self","next"]),
         ],
     )
 
-    text_splitter= SentenceSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=OVERLAP)
-
-    ## on va pas faire les summary 
     node_parser = SimpleNodeParser(
         text_splitter=text_splitter,
-        #metadata_extractor=metadata_extractor,
     )
 
     # ***************  Service Context 
-    #   
+       
     service_context = ServiceContext.from_defaults(
         llm_predictor=llm_predictor,
         embed_model= embed_model,
@@ -174,8 +139,6 @@ def main(thequery: str):
         callback_manager=callback_manager
         )
     
-    #from llama_index import set_global_service_context
-    #set_global_service_context(service_context) 
         
     # ***************  Load Documents, Build Index 
            
@@ -214,110 +177,112 @@ def main(thequery: str):
 
 
     # ***************  Make the query with the real good templates 
-
-    from langchain.prompts.chat import (
-         ChatPromptTemplate,
-         HumanMessagePromptTemplate,
-         SystemMessagePromptTemplate,
-    )
     
-    from llama_index.prompts import Prompt
 
-    #from llama_index.prompts.prompts import RefinePrompt, QuestionAnswerPrompt
+    if RUN_BASEQUERY:
+        sim_cut  = 0.70
+        mmr = 0.95
 
-    chat_text_qa_msgs = [
-        SystemMessagePromptTemplate.from_template(
-            "You are an assistant to an important executive decision maker. You prepare summaries based only on bullet points. Each bullet point should be detailed enough to be understandable without context and capture a specific key idea with examples."
-        ),
-        HumanMessagePromptTemplate.from_template(
-        "I prepare a memo on the following topic:\n"
-        "\n"
-        "{query_str}"
-        "\n"
-        "Using bullet points capture the key information of following document that are relevant to the topic."
-        "Answer only with the bullet points relevant to the topic, no any other consideration. Here is the document:\n"
-        "\n"
-        "{context_str}"
-        "\n"
-        ),
-        ]
+        query_engine_A = build_queryengine(    
+            sim_cut  = sim_cut,
+            mmr = mmr,
+            topk = 6,
+            index_vec=index_vec,
+            text_qa_template=TEXT_QA_TEMPLATE_BULLET,
+            service_context=service_context
+        )
+        response_A  = query_engine_A.query(thequery)
+        
+        log_interaction(f"SET A : bullet points - very relevant : {sim_cut}, mmr =  {mmr}")  
+        log_interaction(thequery, response_A )
+        #log_interaction(thequery, response_A.get_formatted_sources() )
     
-    chat_text_qa_msgs_lc = ChatPromptTemplate.from_messages(chat_text_qa_msgs)
-    TEXT_QA_TEMPLATE = Prompt.from_langchain_prompt(chat_text_qa_msgs_lc)
+    if RUN_EXPANDED1:
+        sim_cut  = 0.10
+        mmr = 0.75
+        
+        query_engine_B = build_queryengine(    
+            sim_cut  = sim_cut,
+            mmr = mmr,
+            topk = 6,
+            index_vec=index_vec,
+            text_qa_template=TEXT_QA_TEMPLATE_BULLET,
+            service_context=service_context
+        )
 
+        response_B  = query_engine_B.query(thequery)
+     
+        log_interaction(f"SET B : bullet points - more diverse : {sim_cut}, mmr =  {mmr}")  
+        log_interaction(thequery, response_B )
+        #log_interaction(thequery, response_B.get_formatted_sources() )
+
+
+    if RUN_EXPANDED2:
+        sim_cut  = 0.40
+        mmr = 0.90
+    
+        query_engine_C = build_queryengine(    
+            sim_cut  = sim_cut,
+            mmr = mmr,
+            topk = 6,
+            index_vec=index_vec,
+            text_qa_template=TEXT_QA_TEMPLATE_BLOG,
+            service_context=service_context
+        )
+
+        response_C  = query_engine_C.query(thequery)
+     
+        log_interaction(f"SET C : Blog - avg diversity : {sim_cut}, mmr =  {mmr}")  
+        log_interaction(thequery, response_C )
+        #log_interaction(thequery, response_C.get_formatted_sources() )
+
+
+    if RUN_HYDE:
+        sim_cut  = 0.40
+        mmr = 0.90
+
+        filled_template = (
+            "Please write a passage related to the the topic.\n"
+            "Keep it under 200 words, sharp and clear. Now the topic:\n"
+            "\n"
+            "\n"
+            "{txt}\n"
+            "\n"
+            "\n"
+            'Passage:"""\n'
+        )
+        
+        from langchain import LLMChain
+
+        system_message = "You are an assistant to an important executive decision maker"
+        system_message_prompt = SystemMessagePromptTemplate.from_template(system_message)
+        human_template=filled_template
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+        chain = LLMChain(llm=llm, prompt=chat_prompt)
+
+        vanilla  = chain.run(thequery)
+        log_interaction("VANILLA")  
+        log_interaction(thequery, vanilla)
+        requery = re.sub('^assistant:\s*', '', vanilla)
+
+        query_engine_D = build_queryengine(    
+            sim_cut  = sim_cut,
+            mmr = mmr,
+            topk = 6,
+            index_vec=index_vec,
+            text_qa_template=TEXT_QA_TEMPLATE_BULLET,
+            service_context=service_context
+        )
+        
+        response_D  = query_engine_D.query(requery)
+        
+        log_interaction(f"SET D - HYDE : {sim_cut}, mmr =  {mmr}")  
+        log_interaction(thequery, response_D )
+        #log_interaction(thequery, response_D.get_formatted_sources() )
+       
+  
  
-    docstore=storage_context.docstore
-    
-    node_postprocessors = [
-       PrevNextNodePostprocessor (docstore=docstore, num_nodes=1, mode="both"),
-       SimilarityPostprocessor(similarity_cutoff=0.75)
-        ]
-
-    query_engine = index_vec.as_query_engine (
-        response_mode="accumulate",
-        vector_store_query_mode="mmr", 
-        vector_store_kwargs={"mmr_threshold": 0.9},
-        similarity_top_k=10,
-        use_async=False,
-        verbose=True,
-        node_postprocessors=node_postprocessors,
-        text_qa_template=TEXT_QA_TEMPLATE,
-        #refine_template=CHAT_REFINE_PROMPT,
-        service_context=service_context,
-       )
-
-    #from llama_index.response.pprint_utils import pprint_source_node
-    #nodes = retriever.retrieve(thequery)
-    #for n in nodes:
-    #    pprint_source_node(n, source_length=2500, wrap_width=300)
-
-    #l = TruLlama(query_engine)
-
-    response  = query_engine.query(thequery)
-    
-    print(response)
-    print(response.get_formatted_sources())
-
-
-    filled_template = (
-        "Please write a passage related to the the topic.\n"
-        "Keep it under 200 words, sharp and clear. Now the topic:\n"
-        "\n"
-        "\n"
-        "{txt}\n"
-        "\n"
-        "\n"
-        'Passage:"""\n'
-    )
-    
-    from langchain import LLMChain
-
-    system_message = "You are an assistant to an important executive decision maker"
-    system_message_prompt = SystemMessagePromptTemplate.from_template(system_message)
-    human_template=filled_template
-    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-    chain = LLMChain(llm=llm, prompt=chat_prompt)
-
-    result = chain.run(thequery)
-
-    print(result)
-
-    requery = re.sub('^assistant:\s*', '', result)
-    
-    response2  = query_engine.query(requery)
-    
-    print(response2)
-    print(response2.get_formatted_sources())
-
-    
-    #response  = l.query(thequery)
-    #print(response)
-    #exit()
-
-    log_interaction(thequery, result , "interactions.txt")
-    log_interaction(thequery, response.response_txt() , "interactions.txt")
-    log_interaction(thequery, response2.response_txt() , "interactions.txt")
 
     
 if __name__ == "__main__":

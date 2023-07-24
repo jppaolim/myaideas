@@ -5,6 +5,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+##BEHAVIOR
+RUN_BASEQUERY=True
+RUN_HYDE=True
+RUN_EXPANDED1=True
+RUN_EXPANDED2=True
+
+
 ## SRC DOC
 #DOC_DIRECTORY = "../RessourcesDummy"
 DOC_DIRECTORY = "../Ressources"
@@ -13,9 +20,11 @@ DOC_DIRECTORY = "../Ressources"
 PERSIST_DIRECTORY="./db"
 
 ##EMBEDDINGS
-INSTRUCT_MODEL="hkunlp/instructor-large"
+#INSTRUCT_MODEL="hkunlp/instructor-large"
+INSTRUCT_MODEL="hkunlp/instructor-xl"
+
 #needed for HF 
-TOKENIZERS_PARALLELISM=False
+TOKENIZERS_PARALLELISM=True
 
 CHUNK_SIZE=768 ## pas clair ce qu'il faut mettre et on a des token vs des char ac 512 on a en gros 1680 characters 
 MAXTOKEN = 4096

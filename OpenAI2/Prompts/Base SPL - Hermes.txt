@@ -1,7 +1,0 @@
-### Instruction: 
-Here is a document
-
-{context_str}
-
-Summarize it using bullet points only relevant to the following topic: {query_str}. Don't add knowledge, just use the relevant information of the document. If nothing is relevant, answer with one empty bullet point.
-### Response:
