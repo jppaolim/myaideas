@@ -4,6 +4,7 @@ accelerate
 bitsandbytes
 transformers
 sentence_transformers
+pydantic==1.10.8
 InstructorEmbedding
 llama-cpp-python
 beautifulsoup4

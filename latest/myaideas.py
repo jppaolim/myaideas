@@ -6,9 +6,9 @@ import argparse
 import re
 
 # ****************  Load local var and utils
-from config import *
-from utils import *
-from prompts import *
+from .config import *
+from .utils import *
+from .prompts import *
 
 
 # ****************  LLAMA imports 
