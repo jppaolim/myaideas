@@ -16,5 +16,5 @@ def index(query: Query, request: Request):
     return templates.TemplateResponse('index.html', {"request": request, "results": results})
 
 @app.get("/")
-def read_root(request: Request):
-    return templates.TemplateResponse('index.html', {"request": request})
+def read_root():
+    return {"message": "Hello, world!"}
