@@ -265,7 +265,6 @@ def main(thequery: str):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-query", type=str, required=True, help="Query string to process")
-    args = parser.parse_args()
-    main(args.query)
+    # Removed command-line argument parsing
+    # main function will now be called directly with the query string
+    pass
