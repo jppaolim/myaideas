@@ -1,10 +1,10 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from .myaideas import main
-from pydantic import BaseModel
+#from pydantic import BaseModel
 
-class Query(BaseModel):
-    query: str
+#class Query(BaseModel):
+#    query: str
 
 app = FastAPI()
 
