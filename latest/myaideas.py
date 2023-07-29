@@ -68,9 +68,9 @@ llama_logger = LlamaLogger()
 
 # ***************  Query Engine Builder
 
-def build_queryengine(index_vec: VectorStoreIndex, text_qa_template: str, service_context: ServiceContext, sim_cut: float=0.8, mmr: float=0.9, topk: int=6)  -> RetrieverQueryEngine:
+def run_query(sim_cut: float, mmr: float, topk: int, text_qa_template: str, index_vec: VectorStoreIndex, service_context: ServiceContext, query: str):
     """
-    Builds a query engine with the given parameters.
+    Builds a query engine with the given parameters and runs the query.
     """
     node_postprocessors = [
        SimilarityPostprocessor(similarity_cutoff=sim_cut)
@@ -87,7 +87,7 @@ def build_queryengine(index_vec: VectorStoreIndex, text_qa_template: str, servic
         text_qa_template=text_qa_template,
         service_context=service_context,
        )
-    return query_engine
+    return query_engine.query(query)
 
 def main(thequery: str):
     """
@@ -174,18 +174,18 @@ def main(thequery: str):
         sim_cut  = 0.85
         mmr = 0.95
 
-        query_engine_A = build_queryengine(    
-            sim_cut  = sim_cut,
-            mmr = mmr,
-            topk = 6,
-            index_vec=index_vec,
+        response_A = run_query(
+            sim_cut=sim_cut,
+            mmr=mmr,
+            topk=6,
             text_qa_template=TEXT_QA_TEMPLATE_BULLET,
-            service_context=service_context
+            index_vec=index_vec,
+            service_context=service_context,
+            query=thequery
         )
-        response_A  = query_engine_A.query(thequery)
         
         log_interaction(f"SET A : bullet points - very relevant : {sim_cut}, mmr =  {mmr}")  
-        log_interaction(thequery, response_A )
+        log_interaction(thequery, response_A)
 
     if RUN_EXPANDED1:
         sim_cut  = 0.50
