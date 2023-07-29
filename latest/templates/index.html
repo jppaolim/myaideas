@@ -1,0 +1,20 @@
+<!DOCTYPE html>                                                                                                                                                      
+ <html>                                                                                                                                                               
+ <head>                                                                                                                                                               
+     <title>My AI Ideas</title>                                                                                                                                       
+ </head>                                                                                                                                                              
+ <body>                                                                                                                                                               
+     <h1>My AI Ideas</h1>                                                                                                                                             
+     <form method="POST">                                                                                                                                             
+         <label for="query">Enter your query:</label><br>                                                                                                             
+         <input type="text" id="query" name="query"><br>                                                                                                              
+         <input type="submit" value="Submit">                                                                                                                         
+     </form>                                                                                                                                                          
+     {% if results %}                                                                                                                                                 
+         <h2>Results:</h2>                                                                                                                                            
+         {% for result in results %}                                                                                                                                  
+             <p>{{ result }}</p>                                                                                                                                      
+         {% endfor %}                                                                                                                                                 
+     {% endif %}                                                                                                                                                      
+ </body>                                                                                                                                                              
+ </html>
