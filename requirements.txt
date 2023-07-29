@@ -16,4 +16,5 @@ python-dotenv
 faiss-cpu
 promptlayer
 langchain
-llama_index
+llama_indexfastapi
+uvicorn
