@@ -17,5 +17,6 @@ faiss-cpu
 promptlayer
 langchain
 llama_index
-gunicorn
+uvicorn
+fastapi
 aider-chat
