@@ -1,7 +1,9 @@
 from datetime import datetime
+import re
 
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, cast
 
-                                                                                                                                                              
 def log_interaction(input_str, response_str=None):                                                                                                                   
     """                                                                                                                                                              
     Logs interactions between the user and the system.                                                                                                               
@@ -22,6 +24,7 @@ def read_str_prompt(filepath: str):
         template = file.read()
     return template
 
+#************* - A casser dans class MarkdownReader
 
 def correct_markdown(self, content: str) -> str:
     """
