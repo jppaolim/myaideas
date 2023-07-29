@@ -25,6 +25,9 @@ from llama_index import (
     PromptHelper
 )
 
+#from datetime import datetime
+#from typing import Any, Dict, List, Optional, Tuple, cast
+
 
 from langchain.embeddings import HuggingFaceInstructEmbeddings, HuggingFaceEmbeddings
 
@@ -63,6 +66,23 @@ logger.addHandler(stdout_handler)
 llama_debug = LlamaDebugHandler(print_trace_on_end=True)
 callback_manager = CallbackManager([llama_debug])
 llama_logger = LlamaLogger()
+
+
+def log_interaction(input_str, response_str=None):                                                                                                                                                                                                                                                                 
+    if response_str is not None:                                                                                                                                     
+        return f"{datetime.now()}:\nInput: {input_str}\nResponse: {response_str}\n"                                                                                  
+    else:                                                                                                                                                            
+        return f"--------------------------------\nINFO: {input_str}\n-------------------------------\n"     
+
+
+def read_str_prompt(filepath: str):
+    """
+    Reads a string prompt from a file.
+    """
+    with open(filepath, 'r') as file:
+        template = file.read()
+    return template
+
 
 # ***************  Query Engine Builder
 
