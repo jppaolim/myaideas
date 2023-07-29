@@ -16,5 +16,6 @@ python-dotenv
 faiss-cpu
 promptlayer
 langchain
-llama_indexfastapi
+llama_index
 gunicorn
+aider-chat
