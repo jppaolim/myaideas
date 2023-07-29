@@ -3,6 +3,7 @@ import logging
 import sys
 import shutil
 import argparse
+import re
 
 # ****************  Load local var and utils
 from config import *
@@ -170,6 +171,7 @@ def main(thequery: str):
         index_vec.storage_context.persist(persist_dir=PERSIST_DIRECTORY) 
 
     # Make the query with the real good templates 
+    results = []                                                                                                                                                     
     if RUN_BASEQUERY:
         sim_cut  = 0.85
         mmr = 0.95
@@ -184,8 +186,7 @@ def main(thequery: str):
             query=thequery
         )
         
-        log_interaction(f"SET A : bullet points - very relevant : {sim_cut}, mmr =  {mmr}")  
-        log_interaction(thequery, response_A)
+        results.append(log_interaction(f"SET A : bullet points - very relevant : {sim_cut}, mmr =  {mmr}", response_A))  
 
     if RUN_EXPANDED1:
         sim_cut  = 0.50
@@ -201,8 +202,8 @@ def main(thequery: str):
             query=thequery
         )
         
-        log_interaction(f"SET B : bullet points - more diverse : {sim_cut}, mmr =  {mmr}")  
-        log_interaction(thequery, response_B)
+        results.append(log_interaction(f"SET B : bullet points - more diverse : {sim_cut}, mmr =  {mmr}", response_B))                                               
+
 
     if RUN_EXPANDED2:
         sim_cut  = 0.50
@@ -218,8 +219,8 @@ def main(thequery: str):
             query=thequery
         )
         
-        log_interaction(f"SET C : Blog - more diversity : {sim_cut}, mmr =  {mmr}")  
-        log_interaction(thequery, response_C)
+        results.append(log_interaction(f"SET C : Blog - more diversity : {sim_cut}, mmr =  {mmr}", response_C))                                                      
+
 
     if RUN_HYDE:
         sim_cut  = 0.50
@@ -260,8 +261,8 @@ def main(thequery: str):
             query=requery
         )
         
-        log_interaction(f"SET D - HYDE TENTATIVE INSPIRATION : {sim_cut}, mmr =  {mmr}")  
-        log_interaction(thequery, response_D)
+        results.append(log_interaction(f"SET D - HYDE TENTATIVE INSPIRATION : {sim_cut}, mmr =  {mmr}", response_D))                                                 
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

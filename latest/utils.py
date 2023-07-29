@@ -1,22 +1,17 @@
 from datetime import datetime
 
 
-def log_interaction(input_str, response_str=None, filename="interactions.txt"):
-    """
-    Logs interactions between the user and the system.
-    If a response string is provided, it logs the date, input, and response.
-    If no response string is provided, it logs the input string as info.
-    """
-    with open(filename, 'a') as f:
-        if response_str is not None:
-            f.write(f"{datetime.now()}:\n")
-            f.write(f"Input: {input_str}\n")
-            f.write(f"Response: {response_str}\n")
-        else:
-            f.write(f"--------------------------------\n")
-            f.write(f"INFO: {input_str}\n")
-            f.write("-------------------------------\n")
-        f.write("\n")  # Write a new line for separating this interaction from the next one
+                                                                                                                                                              
+def log_interaction(input_str, response_str=None):                                                                                                                   
+    """                                                                                                                                                              
+    Logs interactions between the user and the system.                                                                                                               
+    If a response string is provided, it logs the date, input, and response.                                                                                         
+    If no response string is provided, it logs the input string as info.                                                                                             
+    """                                                                                                                                                              
+    if response_str is not None:                                                                                                                                     
+        return f"{datetime.now()}:\nInput: {input_str}\nResponse: {response_str}\n"                                                                                  
+    else:                                                                                                                                                            
+        return f"--------------------------------\nINFO: {input_str}\n-------------------------------\n"     
 
 
 def read_str_prompt(filepath: str):
