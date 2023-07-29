@@ -16,7 +16,7 @@ unstructured
 python-dotenv
 faiss-cpu
 promptlayer
-langchain
+langchain==0.0.240
 llama_index
 uvicorn
 fastapi

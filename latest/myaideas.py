@@ -47,8 +47,6 @@ from llama_index.query_engine.transform_query_engine import TransformQueryEngine
 from llama_index.logger import LlamaLogger
 from llama_index.callbacks import CallbackManager, LlamaDebugHandler, CBEventType
 
-
-
 # ***************  logging and Callback 
 
 logger = logging.getLogger()
@@ -65,7 +63,6 @@ logger.addHandler(stdout_handler)
 llama_debug = LlamaDebugHandler(print_trace_on_end=True)
 callback_manager = CallbackManager([llama_debug])
 llama_logger = LlamaLogger()
-
 
 # ***************  Query Engine Builder
 
@@ -260,13 +257,7 @@ def main(thequery: str):
             service_context=service_context,
             query=requery
         )
-def main(thequery: str):
-    # ... existing code ...
-    if RUN_HYDE:
-        # ... existing code ...
-        results.append(log_interaction(f"SET D - HYDE TENTATIVE INSPIRATION : {sim_cut}, mmr =  {mmr}", response_D))                                                  
+        
+        results.append(log_interaction(f"SET D - HYDE TENTATIVE INSPIRATION : {sim_cut}, mmr =  {mmr}", response_D))      
+
     return results
-if __name__ == "__main__":
-    # Removed command-line argument parsing
-    # main function will now be called directly with the query string
-    pass
