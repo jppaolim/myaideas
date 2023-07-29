@@ -19,4 +19,3 @@ langchain
 llama_index
 uvicorn
 fastapi
-aider-chat
