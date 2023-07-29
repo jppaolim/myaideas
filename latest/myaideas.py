@@ -190,38 +190,36 @@ def main(thequery: str):
     if RUN_EXPANDED1:
         sim_cut  = 0.50
         mmr = 0.90
-        
-        query_engine_B = build_queryengine(    
-            sim_cut  = sim_cut,
-            mmr = mmr,
-            topk = 6,
-            index_vec=index_vec,
-            text_qa_template=TEXT_QA_TEMPLATE_BULLET,
-            service_context=service_context
-        )
 
-        response_B  = query_engine_B.query(thequery)
-     
+        response_B = run_query(
+            sim_cut=sim_cut,
+            mmr=mmr,
+            topk=6,
+            text_qa_template=TEXT_QA_TEMPLATE_BULLET,
+            index_vec=index_vec,
+            service_context=service_context,
+            query=thequery
+        )
+        
         log_interaction(f"SET B : bullet points - more diverse : {sim_cut}, mmr =  {mmr}")  
-        log_interaction(thequery, response_B )
+        log_interaction(thequery, response_B)
 
     if RUN_EXPANDED2:
         sim_cut  = 0.50
         mmr = 0.90
-    
-        query_engine_C = build_queryengine(    
-            sim_cut  = sim_cut,
-            mmr = mmr,
-            topk = 6,
-            index_vec=index_vec,
-            text_qa_template=TEXT_QA_TEMPLATE_BLOG,
-            service_context=service_context
-        )
 
-        response_C  = query_engine_C.query(thequery)
-     
+        response_C = run_query(
+            sim_cut=sim_cut,
+            mmr=mmr,
+            topk=6,
+            text_qa_template=TEXT_QA_TEMPLATE_BLOG,
+            index_vec=index_vec,
+            service_context=service_context,
+            query=thequery
+        )
+        
         log_interaction(f"SET C : Blog - more diversity : {sim_cut}, mmr =  {mmr}")  
-        log_interaction(thequery, response_C )
+        log_interaction(thequery, response_C)
 
     if RUN_HYDE:
         sim_cut  = 0.50
@@ -252,19 +250,18 @@ def main(thequery: str):
         log_interaction(thequery, vanilla)
         requery = re.sub('^assistant:\s*', '', vanilla)
 
-        query_engine_D = build_queryengine(    
-            sim_cut  = sim_cut,
-            mmr = mmr,
-            topk = 6,
-            index_vec=index_vec,
+        response_D = run_query(
+            sim_cut=sim_cut,
+            mmr=mmr,
+            topk=6,
             text_qa_template=TEXT_QA_TEMPLATE_BULLET,
-            service_context=service_context
+            index_vec=index_vec,
+            service_context=service_context,
+            query=requery
         )
         
-        response_D  = query_engine_D.query(requery)
-        
         log_interaction(f"SET D - HYDE TENTATIVE INSPIRATION : {sim_cut}, mmr =  {mmr}")  
-        log_interaction(thequery, response_D )
+        log_interaction(thequery, response_D)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
