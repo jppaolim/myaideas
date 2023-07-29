@@ -260,10 +260,12 @@ def main(thequery: str):
             service_context=service_context,
             query=requery
         )
-        
-        results.append(log_interaction(f"SET D - HYDE TENTATIVE INSPIRATION : {sim_cut}, mmr =  {mmr}", response_D))                                                 
-
-
+def main(thequery: str):
+    # ... existing code ...
+    if RUN_HYDE:
+        # ... existing code ...
+        results.append(log_interaction(f"SET D - HYDE TENTATIVE INSPIRATION : {sim_cut}, mmr =  {mmr}", response_D))                                                  
+    return results
 if __name__ == "__main__":
     # Removed command-line argument parsing
     # main function will now be called directly with the query string
