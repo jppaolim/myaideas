@@ -204,3 +204,4 @@ cython_debug/
 
 # JetBrains Rider
 *.sln.iml
+.aider*
