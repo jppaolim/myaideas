@@ -1,9 +1,0 @@
-A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.
-USER: Context information is below. It is provided in a numbered list (1 to {num_chunks}), where each item in the list corresponds to a summary.
------------------------------
-{context_list}
------------------------------
-Using only the choices above and not prior knowledge, return the choice that is most relevant to the question: 
-{query_str}
-Provide choice in the following format: 'ANSWER: <number>' and explain why this summary was selected in relation to the question.
-ASSISTANT:

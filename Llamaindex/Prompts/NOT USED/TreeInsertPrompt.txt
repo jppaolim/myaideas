@@ -1,8 +1,0 @@
-A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.
-USER: Context information is below. It is provided in a numbered list (1 to {num_chunks}), where each item in the list corresponds to a summary.
------------------------------
-{context_list}
------------------------------
-Given the context information, here is a new piece of information: {new_chunk_text}
-Answer with the number corresponding to the summary that should be updated. The answer should be the number corresponding to the summary that is most relevant to the question.
-ASSISTANT :

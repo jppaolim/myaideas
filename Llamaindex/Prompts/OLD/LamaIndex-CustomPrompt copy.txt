@@ -1,7 +1,0 @@
-A chat between a curious student called USER and an insightful artificial intelligence assistant called ASSISTANT.
-USER : I have gathered following articles that I will call the CORPUS, read them carefully :
-{context_str}
-ASSISTANT : Thank you, I have read the CORPUS. How may I help you ?
-USER : Please answer following query. Use your knowledge and the CORPUS if relevant but keep the answer understandable even for those who haven't read the CORPUS. Detail your arguments. Keep the style fluid. Here is the query :
-{query_str}
-ASSISTANT :

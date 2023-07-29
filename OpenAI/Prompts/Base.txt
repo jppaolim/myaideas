@@ -1,7 +1,0 @@
-A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions. 
-###Human: Here is a topic I am studying: {query_str}.
-Using bullet points summarize the key points of following text that are relevant to the topic. Bullet points should be crisp, short, specific but understandable without context. Keep the total under 250 words. 
-
-{context_str}
-
-###Assistant:

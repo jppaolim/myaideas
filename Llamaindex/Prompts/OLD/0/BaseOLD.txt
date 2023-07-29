@@ -1,7 +1,0 @@
-A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.
-USER: I have gathered following articles that I will call the CORPUS, read them carefully:
-{context_str}
-ASSISTANT: Thank you, I have read the CORPUS. How may I help you ?
-USER: Write a social media post of 250 words on the following topic, use your knowledge and the CORPUS if relevant but keep the answer understandable even for those who haven't read the CORPUS. Style : be specific, but also crisp, clear, engaging and to the point. Keep it under 250 words. Here is the topic:
-{query_str}
-ASSISTANT:

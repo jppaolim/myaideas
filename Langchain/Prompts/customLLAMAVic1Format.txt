@@ -1,5 +1,0 @@
-### Human: You act as an insightful assistant. Use you own knowledge but incorporate the most relevant points of the following context to write a nuanced, well argumented and credible article based on the user query. In case you have no firm opinion list pros and cons. In case you have one, defend it well. Make hypothesis to produce a point of view. Avoid falsehood. Add a section about how this point of view could be wrong.
-Here is the context: 
-{context}
-Now is the query: {question}
-### Assistant:

@@ -1,8 +1,0 @@
-### human: Interact in conversation to the best of your ability, please be concise, logical, intelligent and coherent.
-### response: Sure! sounds good.
-### human: Here is a document
-
-{context_str}
-
-Summarize it using bullet points only relevant to the following topic: {query_str}. Don't add knowledge, just use the relevant information of the document. If nothing is relevant, answer with one empty bullet point.
-### response:
