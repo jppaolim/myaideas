@@ -167,6 +167,9 @@ def main(thequery: str):
    
     # If something missing or "force build", we start from scratch 
     if (missingfile or FORCE_REBUILD):
+        print("Need to rebuild index")
+        print(PERSIST_DIRECTORY)
+        print(docfile)
         if os.path.exists(PERSIST_DIRECTORY):
             shutil.rmtree(PERSIST_DIRECTORY)
         storage_context = StorageContext.from_defaults()
